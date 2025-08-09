@@ -80,7 +80,11 @@ h1 {
   border-radius: 4px;
   cursor: pointer;
 }
-
+.task-title {
+  color: #000 !important; /* Black text, force override */
+  font-size: 16px;
+  font-weight: 500;
+}
 
 .task-details {
   font-size: 12px;

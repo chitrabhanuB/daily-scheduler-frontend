@@ -28,11 +28,11 @@ function App() {
       const res = await fetch(`${API_URL}/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, priority: "Medium" })
+        body: JSON.stringify({ title, priority: "Medium" }),
       });
       const newTask = await res.json();
       setTitle("");
-      setTasks(prev => [newTask, ...prev]);
+      setTasks((prev) => [newTask, ...prev]);
     } catch (err) {
       console.error("Error creating task:", err);
     }
@@ -41,19 +41,21 @@ function App() {
   async function handleDelete(id) {
     try {
       await fetch(`${API_URL}/tasks/${id}`, { method: "DELETE" });
-      setTasks(prev => prev.filter(t => t._id !== id));
+      setTasks((prev) => prev.filter((t) => t._id !== id));
     } catch (err) {
       console.error("Error deleting task:", err);
     }
   }
 
   return (
-    <div style={{
-      padding: 20,
-      fontFamily: "Arial, sans-serif",
-      backgroundColor: "#f9f9f9",
-      minHeight: "100vh"
-    }}>
+    <div
+      style={{
+        padding: 20,
+        fontFamily: "Arial, sans-serif",
+        backgroundColor: "#f9f9f9",
+        minHeight: "100vh",
+      }}
+    >
       <h1 style={{ textAlign: "center", color: "#333" }}>🗓 Daily Task Scheduler</h1>
 
       <form
@@ -62,19 +64,19 @@ function App() {
           display: "flex",
           justifyContent: "center",
           marginBottom: 20,
-          gap: "10px"
+          gap: "10px",
         }}
       >
         <input
           value={title}
-          onChange={e => setTitle(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
           placeholder="New task title"
           style={{
             padding: 10,
             width: 300,
             borderRadius: 6,
             border: "1px solid #ccc",
-            outline: "none"
+            outline: "none",
           }}
         />
         <button
@@ -85,26 +87,28 @@ function App() {
             color: "white",
             border: "none",
             borderRadius: 6,
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           ➕ Add
         </button>
       </form>
 
-      <div style={{
-        maxWidth: 500,
-        margin: "0 auto",
-        background: "white",
-        padding: 20,
-        borderRadius: 8,
-        boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
-      }}>
+      <div
+        style={{
+          maxWidth: 500,
+          margin: "0 auto",
+          background: "white",
+          padding: 20,
+          borderRadius: 8,
+          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+        }}
+      >
         {tasks.length === 0 ? (
           <p style={{ textAlign: "center", color: "#777" }}>No tasks found.</p>
         ) : (
           <ul style={{ listStyle: "none", padding: 0 }}>
-            {tasks.map(t => (
+            {tasks.map((t) => (
               <li
                 key={t._id}
                 style={{
@@ -114,11 +118,11 @@ function App() {
                   borderRadius: 6,
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "center"
+                  alignItems: "center",
                 }}
               >
                 <div>
-                  <strong>{t.title}</strong>
+                  <strong style={{ color: "#000" }}>{t.title}</strong>
                   <div style={{ fontSize: 12, color: "#666" }}>
                     {t.description || "—"} • {t.priority} •{" "}
                     {t.completed ? "✅ Done" : "⌛ Open"}
@@ -132,7 +136,7 @@ function App() {
                     border: "none",
                     padding: "6px 10px",
                     borderRadius: 4,
-                    cursor: "pointer"
+                    cursor: "pointer",
                   }}
                 >
                   🗑 Delete
