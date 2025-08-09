@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./App.css"; // <-- import the CSS
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -48,32 +49,27 @@ function App() {
   }
 
   return (
-    <div style={{ padding: 20, fontFamily: "Arial" }}>
+    <div className="container">
       <h1>Daily Task Scheduler</h1>
 
-      <form onSubmit={handleAdd} style={{ marginBottom: 16 }}>
+      <form onSubmit={handleAdd}>
         <input
           value={title}
           onChange={e => setTitle(e.target.value)}
           placeholder="New task title"
-          style={{ padding: 8, width: 300 }}
         />
-        <button type="submit" style={{ marginLeft: 8, padding: "8px 12px" }}>
-          Add
-        </button>
+        <button type="submit">Add</button>
       </form>
 
       {tasks.length === 0 ? (
         <p>No tasks found.</p>
       ) : (
-        <ul>
+        <ul className="task-list">
           {tasks.map(t => (
-            <li key={t._id} style={{ marginBottom: 8 }}>
+            <li key={t._id} className="task-item">
               <strong>{t.title}</strong>{" "}
-              <button onClick={() => handleDelete(t._id)} style={{ marginLeft: 8 }}>
-                Delete
-              </button>
-              <div style={{ fontSize: 12, color: "#666" }}>
+              <button onClick={() => handleDelete(t._id)}>Delete</button>
+              <div className="task-meta">
                 {t.description || "—"} • {t.priority} • {t.completed ? "Done" : "Open"}
               </div>
             </li>
