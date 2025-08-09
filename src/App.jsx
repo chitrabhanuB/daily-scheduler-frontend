@@ -1,32 +1,84 @@
 import { useEffect, useState } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 function App() {
   const [tasks, setTasks] = useState([]);
+  const [title, setTitle] = useState("");
+
+  async function loadTasks() {
+    try {
+      const res = await fetch(`${API_URL}/tasks`);
+      const data = await res.json();
+      setTasks(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+      setTasks([]);
+    }
+  }
 
   useEffect(() => {
-    fetch("https://daily-task-scheduler-backend.onrender.com/tasks")
-      .then(res => res.json())
-      .then(data => {
-        console.log("Fetched data type:", Array.isArray(data) ? "Array" : typeof data);
-        console.log("Fetched data content:", data);
-        setTasks(data);
-      })
-      .catch(err => console.error("Error fetching tasks:", err));
+    loadTasks();
   }, []);
 
+  async function handleAdd(e) {
+    e.preventDefault();
+    if (!title.trim()) return;
+    try {
+      const res = await fetch(`${API_URL}/tasks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, priority: "Medium" })
+      });
+      const newTask = await res.json();
+      setTitle("");
+      setTasks(prev => [newTask, ...prev]);
+    } catch (err) {
+      console.error("Error creating task:", err);
+    }
+  }
+
+  async function handleDelete(id) {
+    try {
+      await fetch(`${API_URL}/tasks/${id}`, { method: "DELETE" });
+      setTasks(prev => prev.filter(t => t._id !== id));
+    } catch (err) {
+      console.error("Error deleting task:", err);
+    }
+  }
+
   return (
-    <div>
+    <div style={{ padding: 20, fontFamily: "Arial" }}>
       <h1>Daily Task Scheduler</h1>
-      {tasks.length > 0 ? (
+
+      <form onSubmit={handleAdd} style={{ marginBottom: 16 }}>
+        <input
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          placeholder="New task title"
+          style={{ padding: 8, width: 300 }}
+        />
+        <button type="submit" style={{ marginLeft: 8, padding: "8px 12px" }}>
+          Add
+        </button>
+      </form>
+
+      {tasks.length === 0 ? (
+        <p>No tasks found.</p>
+      ) : (
         <ul>
-          {tasks.map(task => (
-            <li key={task._id}>
-              <strong>{task.title}</strong> - {task.description}
+          {tasks.map(t => (
+            <li key={t._id} style={{ marginBottom: 8 }}>
+              <strong>{t.title}</strong>{" "}
+              <button onClick={() => handleDelete(t._id)} style={{ marginLeft: 8 }}>
+                Delete
+              </button>
+              <div style={{ fontSize: 12, color: "#666" }}>
+                {t.description || "—"} • {t.priority} • {t.completed ? "Done" : "Open"}
+              </div>
             </li>
           ))}
         </ul>
-      ) : (
-        <p>No tasks found.</p>
       )}
     </div>
   );
