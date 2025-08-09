@@ -63,7 +63,12 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: #000; /* Make all task text black */
 }
+.task-item strong {
+  color: #000; /* Ensure task title is black */
+}
+
 
 .task-item button {
   background: #ff4d4f;
@@ -74,9 +79,10 @@ h1 {
   cursor: pointer;
 }
 
+
 .task-details {
   font-size: 12px;
-  color: #666;
+  color: #333; /* Dark gray for details */
 }
 
 /* Mobile-friendly tweaks */
