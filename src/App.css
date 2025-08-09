@@ -1,65 +1,96 @@
+/* App.css */
+
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #f3f4f6, #dbeafe);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
 }
 
-.container {
-  background: white;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-  width: 350px;
+.app-container {
+  padding: 20px;
+  min-height: 100vh;
 }
 
 h1 {
   text-align: center;
+  color: #333;
+}
+
+.task-form {
+  display: flex;
+  justify-content: center;
   margin-bottom: 20px;
-  color: #2563eb;
+  gap: 10px;
 }
 
-input {
-  width: calc(100% - 100px);
-  padding: 8px;
-  border: 1px solid #ccc;
+.task-form input {
+  padding: 10px;
+  width: 300px;
   border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
 }
 
-button {
-  padding: 8px 12px;
-  margin-left: 10px;
+.task-form button {
+  padding: 10px 16px;
+  background-color: #4CAF50;
+  color: white;
   border: none;
   border-radius: 6px;
-  background-color: #2563eb;
-  color: white;
   cursor: pointer;
-  transition: background 0.3s;
 }
 
-button:hover {
-  background-color: #1e40af;
+.task-list-container {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .task-list {
-  margin-top: 20px;
+  list-style: none;
+  padding: 0;
 }
 
 .task-item {
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #eee;
+  border-radius: 6px;
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  background: #f9fafb;
-  border-radius: 6px;
-  margin-bottom: 8px;
+  align-items: center;
 }
 
 .task-item button {
-  background-color: #ef4444;
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.task-item button:hover {
-  background-color: #b91c1c;
+.task-details {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Mobile-friendly tweaks */
+@media (max-width: 600px) {
+  .task-form {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .task-form input {
+    width: 90%;
+  }
+
+  .task-list-container {
+    width: 90%;
+  }
 }
