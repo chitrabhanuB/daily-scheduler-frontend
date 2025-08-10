@@ -28,6 +28,8 @@ function App() {
 
   useEffect(() => {
     loadTasks();
+
+    // Ask for Notification permission on load
     if (Notification.permission !== "granted") {
       Notification.requestPermission();
     }
@@ -44,9 +46,13 @@ function App() {
         ) {
           const taskTime = new Date(task.deadline);
           if (now >= taskTime) {
-            new Notification("Task Reminder", {
-              body: `${task.title} - ${task.description || "No description"}`,
-            });
+            // Show browser notification
+            if (Notification.permission === "granted") {
+              new Notification("Task Reminder", {
+                body: `${task.title} - ${task.description || "No description"}`,
+                icon: "/icon.png", // optional icon
+              });
+            }
             setNotifiedTasks((prev) => [...prev, task._id]);
           }
         }
