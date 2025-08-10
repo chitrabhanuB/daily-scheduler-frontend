@@ -9,12 +9,7 @@ function App() {
   const [priority, setPriority] = useState("Medium");
   const [deadline, setDeadline] = useState("");
   const [completed, setCompleted] = useState(false);
-
-  const [showModal, setShowModal] = useState(false);
-  const [editTaskId, setEditTaskId] = useState(null);
-
-  // Load sound for reminders
-  const alarmSound = new Audio("/alarm.mp3"); // Place alarm.mp3 in public folder
+  const [triggeredAlarms, setTriggeredAlarms] = useState([]); // ✅ track alarms played
 
   async function loadTasks() {
     try {
@@ -29,37 +24,6 @@ function App() {
 
   useEffect(() => {
     loadTasks();
-  }, []);
-
-  // Reminder checker
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      tasks.forEach((task) => {
-        if (task.deadline && !task.completed) {
-          const taskTime = new Date(task.deadline);
-          if (
-            Math.abs(taskTime - now) < 1000 * 30 // within 30 seconds
-          ) {
-            alarmSound.play().catch(() => {});
-            if (Notification.permission === "granted") {
-              new Notification("⏰ Task Reminder", {
-                body: `${task.title} is due now!`,
-              });
-            }
-          }
-        }
-      });
-    }, 10000); // checks every 10 seconds
-
-    return () => clearInterval(interval);
-  }, [tasks]);
-
-  // Ask for notification permission
-  useEffect(() => {
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
-    }
   }, []);
 
   async function handleAdd(e) {
@@ -80,7 +44,11 @@ function App() {
       });
 
       const newTask = await res.json();
-      resetForm();
+      setTitle("");
+      setDescription("");
+      setPriority("Medium");
+      setDeadline("");
+      setCompleted(false);
       setTasks((prev) => [newTask, ...prev]);
     } catch (err) {
       console.error("Error creating task:", err);
@@ -91,6 +59,7 @@ function App() {
     try {
       await fetch(`${API_URL}/tasks/${id}`, { method: "DELETE" });
       setTasks((prev) => prev.filter((t) => t._id !== id));
+      setTriggeredAlarms((prev) => prev.filter((tid) => tid !== id)); // Remove from triggered list
     } catch (err) {
       console.error("Error deleting task:", err);
     }
@@ -113,58 +82,36 @@ function App() {
     }
   }
 
-  function resetForm() {
-    setTitle("");
-    setDescription("");
-    setPriority("Medium");
-    setDeadline("");
-    setCompleted(false);
-  }
+  // 🔔 Alarm checker (only once per task)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
 
-  function handleEditClick(task) {
-    setEditTaskId(task._id);
-    setTitle(task.title);
-    setDescription(task.description || "");
-    setPriority(task.priority || "Medium");
-    setDeadline(task.deadline ? new Date(task.deadline).toISOString().slice(0, 16) : "");
-    setCompleted(task.completed || false);
-    setShowModal(true);
-  }
+      tasks.forEach((task) => {
+        if (
+          task.deadline &&
+          !task.completed &&
+          !triggeredAlarms.includes(task._id)
+        ) {
+          const deadlineTime = new Date(task.deadline).getTime();
 
-  async function handleUpdate(e) {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${API_URL}/tasks/${editTaskId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description,
-          priority,
-          deadline: deadline ? new Date(deadline) : null,
-          completed,
-        }),
+          // Trigger if within 1 second of deadline
+          if (Math.abs(deadlineTime - now) < 1000) {
+            const alarm = new Audio("/alarm.mp3");
+            alarm.play().catch((err) =>
+              console.error("Audio play error:", err)
+            );
+            alert(`⏰ Task "${task.title}" is due now!`);
+
+            // Mark as triggered
+            setTriggeredAlarms((prev) => [...prev, task._id]);
+          }
+        }
       });
-      const updatedTask = await res.json();
+    }, 1000);
 
-      setTasks((prev) =>
-        prev.map((t) => (t._id === editTaskId ? updatedTask : t))
-      );
-      setShowModal(false);
-      resetForm();
-      setEditTaskId(null);
-    } catch (err) {
-      console.error("Error updating task:", err);
-    }
-  }
-
-  // Color for priority
-  function getPriorityColor(priority) {
-    if (priority === "High") return "red";
-    if (priority === "Medium") return "orange";
-    if (priority === "Low") return "gold";
-    return "black";
-  }
+    return () => clearInterval(interval);
+  }, [tasks, triggeredAlarms]);
 
   return (
     <div className="app-container">
@@ -210,18 +157,25 @@ function App() {
         ) : (
           <ul className="task-list">
             {tasks.map((t) => (
-              <li
-                className="task-item"
-                key={t._id}
-                style={{ borderLeft: `6px solid ${getPriorityColor(t.priority)}` }}
-              >
+              <li className="task-item" key={t._id}>
                 <div>
                   <strong className="task-title">{t.title}</strong>
                   <div className="task-details">
-                    {t.description || "—"} • 
-                    <span style={{ color: getPriorityColor(t.priority) }}>
+                    {t.description || "—"} •{" "}
+                    <span
+                      style={{
+                        color:
+                          t.priority === "High"
+                            ? "red"
+                            : t.priority === "Medium"
+                            ? "orange"
+                            : "green",
+                        fontWeight: "bold",
+                      }}
+                    >
                       {t.priority}
-                    </span> •{" "}
+                    </span>{" "}
+                    •{" "}
                     {t.deadline
                       ? new Date(t.deadline).toLocaleString()
                       : "No deadline"}{" "}
@@ -232,7 +186,6 @@ function App() {
                   <button onClick={() => handleMarkDone(t._id, t.completed)}>
                     {t.completed ? "↩ Undo" : "✔ Mark Done"}
                   </button>
-                  <button onClick={() => handleEditClick(t)}>✏ Edit</button>
                   <button onClick={() => handleDelete(t._id)}>🗑 Delete</button>
                 </div>
               </li>
@@ -240,54 +193,6 @@ function App() {
           </ul>
         )}
       </div>
-
-      {/* Edit Modal */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Edit Task</h2>
-            <form onSubmit={handleUpdate}>
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Task title"
-              />
-              <input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Description"
-              />
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-              >
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
-              </select>
-              <input
-                type="datetime-local"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-              />
-              <label style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                <input
-                  type="checkbox"
-                  checked={completed}
-                  onChange={(e) => setCompleted(e.target.checked)}
-                />
-                Done?
-              </label>
-              <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                <button type="submit">💾 Save</button>
-                <button type="button" onClick={() => setShowModal(false)}>
-                  ❌ Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
