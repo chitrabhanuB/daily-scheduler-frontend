@@ -10,6 +10,10 @@ function App() {
   const [deadline, setDeadline] = useState("");
   const [completed, setCompleted] = useState(false);
 
+  // For edit modal
+  const [showModal, setShowModal] = useState(false);
+  const [editTaskId, setEditTaskId] = useState(null);
+
   async function loadTasks() {
     try {
       const res = await fetch(`${API_URL}/tasks`);
@@ -43,11 +47,7 @@ function App() {
       });
 
       const newTask = await res.json();
-      setTitle("");
-      setDescription("");
-      setPriority("Medium");
-      setDeadline("");
-      setCompleted(false);
+      resetForm();
       setTasks((prev) => [newTask, ...prev]);
     } catch (err) {
       console.error("Error creating task:", err);
@@ -77,6 +77,53 @@ function App() {
       );
     } catch (err) {
       console.error("Error marking task done:", err);
+    }
+  }
+
+  function resetForm() {
+    setTitle("");
+    setDescription("");
+    setPriority("Medium");
+    setDeadline("");
+    setCompleted(false);
+  }
+
+  // Open modal with task data
+  function handleEditClick(task) {
+    setEditTaskId(task._id);
+    setTitle(task.title);
+    setDescription(task.description || "");
+    setPriority(task.priority || "Medium");
+    setDeadline(task.deadline ? task.deadline.split("T")[0] : "");
+    setCompleted(task.completed || false);
+    setShowModal(true);
+  }
+
+  // Save changes
+  async function handleUpdate(e) {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_URL}/tasks/${editTaskId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description,
+          priority,
+          deadline: deadline ? new Date(deadline) : null,
+          completed,
+        }),
+      });
+      const updatedTask = await res.json();
+
+      setTasks((prev) =>
+        prev.map((t) => (t._id === editTaskId ? updatedTask : t))
+      );
+      setShowModal(false);
+      resetForm();
+      setEditTaskId(null);
+    } catch (err) {
+      console.error("Error updating task:", err);
     }
   }
 
@@ -139,6 +186,7 @@ function App() {
                   <button onClick={() => handleMarkDone(t._id, t.completed)}>
                     {t.completed ? "↩ Undo" : "✔ Mark Done"}
                   </button>
+                  <button onClick={() => handleEditClick(t)}>✏ Edit</button>
                   <button onClick={() => handleDelete(t._id)}>🗑 Delete</button>
                 </div>
               </li>
@@ -146,6 +194,54 @@ function App() {
           </ul>
         )}
       </div>
+
+      {/* Edit Modal */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Edit Task</h2>
+            <form onSubmit={handleUpdate}>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Task title"
+              />
+              <input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description"
+              />
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+              >
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+              <input
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+              />
+              <label style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <input
+                  type="checkbox"
+                  checked={completed}
+                  onChange={(e) => setCompleted(e.target.checked)}
+                />
+                Done?
+              </label>
+              <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                <button type="submit">💾 Save</button>
+                <button type="button" onClick={() => setShowModal(false)}>
+                  ❌ Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
