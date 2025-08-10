@@ -94,7 +94,7 @@ function App() {
     setTitle(task.title);
     setDescription(task.description || "");
     setPriority(task.priority || "Medium");
-    setDeadline(task.deadline ? task.deadline.split("T")[0] : "");
+    setDeadline(task.deadline ? new Date(task.deadline).toISOString().slice(0, 16) : "");
     setCompleted(task.completed || false);
     setShowModal(true);
   }
@@ -149,7 +149,7 @@ function App() {
           <option>High</option>
         </select>
         <input
-          type="date"
+          type="datetime-local"
           value={deadline}
           onChange={(e) => setDeadline(e.target.value)}
         />
@@ -177,7 +177,7 @@ function App() {
                   <div className="task-details">
                     {t.description || "—"} • {t.priority} •{" "}
                     {t.deadline
-                      ? new Date(t.deadline).toLocaleDateString()
+                      ? new Date(t.deadline).toLocaleString()
                       : "No deadline"}{" "}
                     • {t.completed ? "✅ Done" : "⌛ Open"}
                   </div>
@@ -220,7 +220,7 @@ function App() {
                 <option>High</option>
               </select>
               <input
-                type="date"
+                type="datetime-local"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
               />
