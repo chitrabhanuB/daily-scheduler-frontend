@@ -10,12 +10,11 @@ function App() {
   const [deadline, setDeadline] = useState("");
   const [completed, setCompleted] = useState(false);
 
-  // For edit modal
   const [showModal, setShowModal] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
 
-  // Alarm system
   const [triggeredTasks, setTriggeredTasks] = useState([]);
+  const [activeAlarmTask, setActiveAlarmTask] = useState(null);
   const alarmAudio = new Audio("/alarm.mp3");
 
   async function loadTasks() {
@@ -44,8 +43,10 @@ function App() {
         ) {
           const taskTime = new Date(task.deadline);
           if (now >= taskTime) {
+            alarmAudio.loop = true;
             alarmAudio.play();
             setTriggeredTasks((prev) => [...prev, task._id]);
+            setActiveAlarmTask(task);
           }
         }
       });
@@ -53,6 +54,17 @@ function App() {
 
     return () => clearInterval(interval);
   }, [tasks, triggeredTasks]);
+
+  function handleDismissAlarm() {
+    alarmAudio.pause();
+    alarmAudio.currentTime = 0;
+    setActiveAlarmTask(null);
+  }
+
+  async function handleDoneFromAlarm(taskId) {
+    handleDismissAlarm();
+    await handleMarkDone(taskId, false);
+  }
 
   async function handleAdd(e) {
     e.preventDefault();
@@ -114,7 +126,6 @@ function App() {
     setCompleted(false);
   }
 
-  // Open modal with task data
   function handleEditClick(task) {
     setEditTaskId(task._id);
     setTitle(task.title);
@@ -129,7 +140,6 @@ function App() {
     setShowModal(true);
   }
 
-  // Save changes
   async function handleUpdate(e) {
     e.preventDefault();
     try {
@@ -271,6 +281,21 @@ function App() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Alarm Popup */}
+      {activeAlarmTask && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>⏰ Task Reminder!</h2>
+            <p><strong>{activeAlarmTask.title}</strong></p>
+            <p>{activeAlarmTask.description || "No description"}</p>
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+              <button onClick={() => handleDoneFromAlarm(activeAlarmTask._id)}>✔ Done</button>
+              <button onClick={handleDismissAlarm}>Snooze</button>
+            </div>
           </div>
         </div>
       )}
