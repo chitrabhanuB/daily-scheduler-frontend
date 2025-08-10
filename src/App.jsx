@@ -10,9 +10,11 @@ function App() {
   const [deadline, setDeadline] = useState("");
   const [completed, setCompleted] = useState(false);
 
-  // For edit modal
   const [showModal, setShowModal] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
+
+  // Load sound for reminders
+  const alarmSound = new Audio("/alarm.mp3"); // Place alarm.mp3 in public folder
 
   async function loadTasks() {
     try {
@@ -27,6 +29,37 @@ function App() {
 
   useEffect(() => {
     loadTasks();
+  }, []);
+
+  // Reminder checker
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      tasks.forEach((task) => {
+        if (task.deadline && !task.completed) {
+          const taskTime = new Date(task.deadline);
+          if (
+            Math.abs(taskTime - now) < 1000 * 30 // within 30 seconds
+          ) {
+            alarmSound.play().catch(() => {});
+            if (Notification.permission === "granted") {
+              new Notification("⏰ Task Reminder", {
+                body: `${task.title} is due now!`,
+              });
+            }
+          }
+        }
+      });
+    }, 10000); // checks every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [tasks]);
+
+  // Ask for notification permission
+  useEffect(() => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
   }, []);
 
   async function handleAdd(e) {
@@ -88,7 +121,6 @@ function App() {
     setCompleted(false);
   }
 
-  // Open modal with task data
   function handleEditClick(task) {
     setEditTaskId(task._id);
     setTitle(task.title);
@@ -99,7 +131,6 @@ function App() {
     setShowModal(true);
   }
 
-  // Save changes
   async function handleUpdate(e) {
     e.preventDefault();
     try {
@@ -125,6 +156,14 @@ function App() {
     } catch (err) {
       console.error("Error updating task:", err);
     }
+  }
+
+  // Color for priority
+  function getPriorityColor(priority) {
+    if (priority === "High") return "red";
+    if (priority === "Medium") return "orange";
+    if (priority === "Low") return "gold";
+    return "black";
   }
 
   return (
@@ -171,11 +210,18 @@ function App() {
         ) : (
           <ul className="task-list">
             {tasks.map((t) => (
-              <li className="task-item" key={t._id}>
+              <li
+                className="task-item"
+                key={t._id}
+                style={{ borderLeft: `6px solid ${getPriorityColor(t.priority)}` }}
+              >
                 <div>
                   <strong className="task-title">{t.title}</strong>
                   <div className="task-details">
-                    {t.description || "—"} • {t.priority} •{" "}
+                    {t.description || "—"} • 
+                    <span style={{ color: getPriorityColor(t.priority) }}>
+                      {t.priority}
+                    </span> •{" "}
                     {t.deadline
                       ? new Date(t.deadline).toLocaleString()
                       : "No deadline"}{" "}
