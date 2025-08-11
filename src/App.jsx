@@ -6,6 +6,7 @@ import Tasks from "./pages/Tasks";
 import About from "./pages/About";
 import Navbar from "./components/Navbar";
 import SplashScreen from "./components/SplashScreen";
+import Home from "./pages/Home";
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(false);
@@ -27,7 +28,7 @@ export default function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<h1>Welcome to KaryaKit</h1>} />
+        <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
