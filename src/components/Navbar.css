@@ -37,3 +37,20 @@
   border-bottom: 2px solid #facc15;
   padding-bottom: 2px;
 }
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-img {
+  height: 40px;
+  margin-right: 8px;
+}
+
+.logo-text {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+}
+

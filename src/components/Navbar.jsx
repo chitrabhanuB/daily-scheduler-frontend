@@ -1,12 +1,18 @@
 import { Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
+import logo from "../assets/logo.png"; // import your logo
 
 export default function Navbar() {
   const location = useLocation();
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo">Karyakit</div>
+      <div className="navbar-logo">
+        <Link to="/" className="logo-link">
+          <img src={logo} alt="KaryaKit Logo" className="logo-img" />
+          <span className="logo-text">KaryaKit</span>
+        </Link>
+      </div>
       <ul className="navbar-links">
         <li>
           <Link to="/" className={location.pathname === "/" ? "active" : ""}>
