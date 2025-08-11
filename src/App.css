@@ -1,6 +1,4 @@
-/* App.css */
-
-/* General Page Style */
+/* General Page */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #f0f4f8, #e4ebf0);
@@ -9,7 +7,6 @@ body {
   color: #333;
 }
 
-/* Main Container */
 .app-container {
   padding: 20px;
   min-height: 100vh;
@@ -27,27 +24,30 @@ h1 {
 /* Task Form */
 .task-form {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 20px;
   gap: 10px;
+  margin-bottom: 20px;
 }
 
-.task-form input {
-  padding: 12px;
-  width: 300px;
+.task-form input,
+.task-form select {
+  padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
   outline: none;
+  min-width: 180px;
   transition: 0.3s ease;
 }
 
-.task-form input:focus {
+.task-form input:focus,
+.task-form select:focus {
   border-color: #4CAF50;
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.4);
 }
 
 .task-form button {
-  padding: 10px 18px;
+  padding: 10px 16px;
   background: linear-gradient(135deg, #4CAF50, #45a049);
   color: white;
   border: none;
@@ -64,7 +64,7 @@ h1 {
 
 /* Task List Container */
 .task-list-container {
-  max-width: 500px;
+  max-width: 650px;
   margin: 0 auto;
   background: white;
   padding: 20px;
@@ -95,12 +95,19 @@ h1 {
   box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
 }
 
-.task-item strong {
-  color: #2c3e50;
+.task-title {
+  font-size: 16px;
+  font-weight: 600;
 }
 
+.task-details {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Action Buttons inside Tasks */
 .task-item button {
-  background: #ff4d4f;
+  background: #4CAF50;
   color: white;
   border: none;
   padding: 6px 10px;
@@ -109,22 +116,31 @@ h1 {
   transition: 0.2s ease;
 }
 
-.task-item button:hover {
-  background: #d9363e;
+.task-item button:nth-child(1) {
+  background: #2196F3;
 }
 
-/* Task Text */
-.task-title {
-  font-size: 16px;
-  font-weight: 500;
+.task-item button:nth-child(1):hover {
+  background: #1976D2;
 }
 
-.task-details {
-  font-size: 12px;
-  color: #666;
+.task-item button:nth-child(2) {
+  background: #ff9800;
 }
 
-/* Modal Overlay */
+.task-item button:nth-child(2):hover {
+  background: #e68900;
+}
+
+.task-item button:nth-child(3) {
+  background: #f44336;
+}
+
+.task-item button:nth-child(3):hover {
+  background: #d32f2f;
+}
+
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -145,6 +161,45 @@ h1 {
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
+.modal form input,
+.modal form select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.modal form input:focus,
+.modal form select:focus {
+  border-color: #4CAF50;
+}
+
+.modal form button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.modal form button[type="submit"] {
+  background: #4CAF50;
+  color: white;
+}
+
+.modal form button[type="button"] {
+  background: #f44336;
+  color: white;
+}
+
+.modal form button:hover {
+  transform: scale(1.05);
+}
+
 /* Mobile Responsive */
 @media (max-width: 600px) {
   .task-form {
@@ -152,7 +207,8 @@ h1 {
     align-items: center;
   }
 
-  .task-form input {
+  .task-form input,
+  .task-form select {
     width: 90%;
   }
 
