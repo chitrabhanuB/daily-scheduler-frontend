@@ -18,7 +18,7 @@ function App() {
 
   async function loadTasks() {
     try {
-      const res = await fetch(`${API_URL}/tasks`);
+      const res = await fetch(${API_URL}/tasks);
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -50,7 +50,7 @@ function App() {
             // Show browser notification
             if (Notification.permission === "granted") {
               new Notification("Task Reminder", {
-                body: `${task.title} - ${task.description || "No description"}`,
+                body: ${task.title} - ${task.description || "No description"},
                 icon: "/icon.png", // optional icon
               });
             }
@@ -68,7 +68,7 @@ function App() {
     if (!title.trim()) return;
 
     try {
-      const res = await fetch(`${API_URL}/tasks`, {
+      const res = await fetch(${API_URL}/tasks, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -90,7 +90,7 @@ function App() {
 
   async function handleDelete(id) {
     try {
-      await fetch(`${API_URL}/tasks/${id}`, { method: "DELETE" });
+      await fetch(${API_URL}/tasks/${id}, { method: "DELETE" });
       setTasks((prev) => prev.filter((t) => t._id !== id));
       setNotifiedTasks((prev) => prev.filter((tid) => tid !== id));
     } catch (err) {
@@ -100,7 +100,7 @@ function App() {
 
   async function handleMarkDone(id, currentStatus) {
     try {
-      const res = await fetch(`${API_URL}/tasks/${id}`, {
+      const res = await fetch(${API_URL}/tasks/${id}, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completed: !currentStatus }),
@@ -140,7 +140,7 @@ function App() {
   async function handleUpdate(e) {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/tasks/${editTaskId}`, {
+      const res = await fetch(${API_URL}/tasks/${editTaskId}, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -284,5 +284,4 @@ function App() {
     </div>
   );
 }
-
 export default App;
