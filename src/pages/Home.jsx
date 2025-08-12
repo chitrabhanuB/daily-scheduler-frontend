@@ -46,6 +46,11 @@ export default function Home() {
           "KaryaKit helped me organize my college projects effortlessly!"  
           <span>— Priya S.</span>
         </blockquote>
+        
+        <blockquote>
+          "KaryaKit helped me organise my schedule and assignments dates and submissions i am very thankful"  
+          <span>— Arvind B .</span>
+        </blockquote>
       </section>
 
       {/* Footer */}
