@@ -39,11 +39,6 @@ export default function Navbar() {
             Tasks
           </Link>
         </li>
-        <li>
-          <Link to="/feedback" className={location.pathname === "/feedback" ? "active" : ""}>
-            Feedback
-          </Link>
-        </li>
       </ul>
     </nav>
   );
