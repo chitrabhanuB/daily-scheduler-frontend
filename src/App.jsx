@@ -7,6 +7,7 @@ import About from "./pages/About";
 import Navbar from "./components/Navbar";
 import SplashScreen from "./components/SplashScreen"; 
 import Home from "./pages/Home";
+import Feedback from "./pages/Feedback";
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(false);
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/tasks" element={<Tasks />} />
+         <Route path="/feedback" element={<Feedback />} />
       </Routes>
     </Router>
   );
