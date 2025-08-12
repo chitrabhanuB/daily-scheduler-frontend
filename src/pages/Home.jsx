@@ -46,11 +46,14 @@ export default function Home() {
           "KaryaKit helped me organize my college projects effortlessly!"  
           <span>— Priya S.</span>
         </blockquote>
-        
         <blockquote>
-          "KaryaKit helped me organise my schedule and assignments dates and submissions i am very thankful"  
-          <span>— Arvind B .</span>
-        </blockquote>
+          "The reminders feature keeps me on track with deadlines — a real productivity booster!"  
+          <span>— Rahul M.</span>
+          </blockquote>
+          <blockquote>
+            "I love how I can access my tasks from anywhere. Simple and super effective!"  
+            <span>— Ananya P.</span>
+            </blockquote>
       </section>
 
       {/* Footer */}

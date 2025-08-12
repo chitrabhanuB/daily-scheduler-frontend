@@ -91,3 +91,20 @@
   margin: 0 0.5rem;
   font-size: 1.2rem;
 }
+.testimonials {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .testimonials {
+    flex-direction: row;
+    justify-content: center;
+  }
+  .testimonials blockquote {
+    max-width: 300px;
+  }
+}
