@@ -12,10 +12,7 @@ export default function Feedback() {
 
     const res = await fetch(`${import.meta.env.VITE_API_URL}/feedback`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ rating, comment })
     });
 
@@ -32,7 +29,6 @@ export default function Feedback() {
     <div className="feedback-page">
       <h2>We value your feedback</h2>
       <form onSubmit={handleSubmit}>
-        
         {/* Star rating */}
         <div className="star-rating">
           {[...Array(5)].map((star, index) => {
