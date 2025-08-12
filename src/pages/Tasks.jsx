@@ -16,9 +16,14 @@ function App() {
 
   const [notifiedTasks, setNotifiedTasks] = useState([]);
 
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId"); // ✅ get userId from storage
+
   async function loadTasks() {
     try {
-      const res = await fetch(`${API_URL}/tasks`);
+      const res = await fetch(`${API_URL}/tasks`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -30,7 +35,6 @@ function App() {
   useEffect(() => {
     loadTasks();
 
-    // Ask for Notification permission on load
     if (Notification.permission !== "granted") {
       Notification.requestPermission();
     }
@@ -47,11 +51,10 @@ function App() {
         ) {
           const taskTime = new Date(task.deadline);
           if (now >= taskTime) {
-            // Show browser notification
             if (Notification.permission === "granted") {
               new Notification("Task Reminder", {
                 body: `${task.title} - ${task.description || "No description"}`,
-                icon: "/icon.png", // optional icon
+                icon: "/icon.png",
               });
             }
             setNotifiedTasks((prev) => [...prev, task._id]);
@@ -70,13 +73,17 @@ function App() {
     try {
       const res = await fetch(`${API_URL}/tasks`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           title,
           description,
           priority,
           deadline: deadline ? new Date(deadline) : null,
           completed,
+          userId // ✅ send userId to backend
         }),
       });
 
@@ -90,7 +97,10 @@ function App() {
 
   async function handleDelete(id) {
     try {
-      await fetch(`${API_URL}/tasks/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/tasks/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setTasks((prev) => prev.filter((t) => t._id !== id));
       setNotifiedTasks((prev) => prev.filter((tid) => tid !== id));
     } catch (err) {
@@ -102,7 +112,10 @@ function App() {
     try {
       const res = await fetch(`${API_URL}/tasks/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({ completed: !currentStatus }),
       });
       const updatedTask = await res.json();
@@ -142,7 +155,10 @@ function App() {
     try {
       const res = await fetch(`${API_URL}/tasks/${editTaskId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           title,
           description,
@@ -168,7 +184,6 @@ function App() {
     <div className="app-container">
       <h1>🗓 Daily Task Scheduler</h1>
 
-      {/* Task Form */}
       <form className="task-form" onSubmit={handleAdd}>
         <input
           value={title}
@@ -201,7 +216,6 @@ function App() {
         <button type="submit">➕ Add</button>
       </form>
 
-      {/* Task List */}
       <div className="task-list-container">
         {tasks.length === 0 ? (
           <p style={{ textAlign: "center", color: "#777" }}>No tasks found.</p>
@@ -232,7 +246,6 @@ function App() {
         )}
       </div>
 
-      {/* Edit Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
@@ -284,4 +297,5 @@ function App() {
     </div>
   );
 }
+
 export default App;

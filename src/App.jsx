@@ -5,7 +5,7 @@ import Signup from "./pages/Signup";
 import Tasks from "./pages/Tasks";
 import About from "./pages/About";
 import Navbar from "./components/Navbar";
-import SplashScreen from "./components/SplashScreen";
+import SplashScreen from "./components/SplashScreen"; 
 import Home from "./pages/Home";
 
 export default function App() {
